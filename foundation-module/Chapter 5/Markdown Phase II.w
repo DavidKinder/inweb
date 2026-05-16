@@ -77,8 +77,9 @@ markdown_item *MDInlineParser::make_inline_chain(markdown_variation *variation,
 	while (Str::get_at(text, i) == ' ') i++;
 	int from = i, escaped = FALSE;
 	for (; i<Str::len(text); i++) {
-		if ((escaped == FALSE) && (Str::get_at(text, i) == '\\') &&
-			(Characters::is_ASCII_punctuation(Str::get_at(text, i+1)))) {
+		inchar32_t c = Str::get_at(text, i), next_c = Str::get_at(text, i+1);
+		if ((escaped == FALSE) && (c == '\\') &&
+			(Characters::is_ASCII_punctuation(next_c))) {
 			escaped = TRUE;
 		} else {
 			if (escaped == FALSE) {

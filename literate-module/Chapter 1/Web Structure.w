@@ -228,6 +228,15 @@ int WebStructure::weave_has_only_one_section(ls_web *W) {
 	return FALSE;
 }
 
+text_stream *WebStructure::range_of_first_section(ls_web *W) {
+	ls_chapter *C; ls_section *S;
+	LOOP_OVER_LINKED_LIST(C, ls_chapter, W->chapters)
+		if (C->imported == FALSE)
+			LOOP_OVER_LINKED_LIST(S, ls_section, C->sections)
+				return WebRanges::of(S);
+	return NULL;
+}
+
 int WebStructure::has_errors(ls_web *W) {
 	ls_chapter *C; ls_section *S;
 	LOOP_OVER_LINKED_LIST(C, ls_chapter, W->chapters)
@@ -412,6 +421,7 @@ ls_section *WebStructure::new_ls_section(ls_chapter *C, text_stream *titling, te
 		WRITE_TO(S->sect_claimed_location, "%S", mr.exp[1]);
 		S->tag_name = Str::duplicate(mr.exp[2]);
 	} else if (Regexp::match(&mr, titling, U"\"(%c+?)\" at \"(%c+)\" *")) {
+		WebStructure::name_section(S, mr.exp[0]);
 		S->sect_claimed_location = Str::new();
 		WRITE_TO(S->sect_claimed_location, "%S", at);
 		if (Str::len(at) > 0) WRITE_TO(S->sect_claimed_location, "%c", FOLDER_SEPARATOR);

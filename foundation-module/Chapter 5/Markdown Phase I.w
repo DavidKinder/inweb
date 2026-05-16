@@ -2242,6 +2242,7 @@ int MDBlockParser::count_cells(text_stream *line, int is_delimiter_row,
 				@<Deal with cell contents@>;
 				Str::clear(cell);
 			} else {
+				if (escaped) PUT_TO(cell, '\\');
 				PUT_TO(cell, c);
 			}
 			escaped = FALSE;

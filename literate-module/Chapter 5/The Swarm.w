@@ -574,6 +574,11 @@ and details of any cover-sheet to use.
 		wv->booklet_title = Str::duplicate(Bibliographic::get_datum(W, I"Title"));
 		if (CM) { WRITE_TO(leafname, "%S", wv->home_leaf); extend = FALSE; }
 		else WRITE_TO(leafname, "%S", W->declaration->name);
+		if (Str::len(leafname) == 0)
+			WRITE_TO(leafname, "%S", WebStructure::range_of_first_section(W));
+		if (Str::len(leafname) == 0) {
+			WRITE_TO(leafname, "%S", wv->home_leaf); extend = FALSE;
+		}
 		if (Str::len(wv->theme_match) > 0)
 			@<Change the titling and leafname to match the tagged theme@>;
 	} else if (Str::eq_wide_string(range, U"0")) {
