@@ -115,6 +115,12 @@ form of commentary:
 
 @e CLASSES_HERE_MAJLC
 
+@ And this is used only for dividing up long source files as if they were
+independent smaller files:
+
+@e PARTITION_MAJLC
+@e INCLUSIVE_PARTITION_MINLC
+
 @ The following conditions are useful for deciding what a line might be, on the
 basis of what the previous one was:
 
@@ -532,6 +538,12 @@ match, we consider that line to be code.
 			res.cf.operand1 = Str::duplicate(material);
 			break;
 
+		case PARTITION_LSNROID:
+			res = LineClassification::new_results(PARTITION_MAJLC, NO_MINLC);
+			res.cf.operand1 = Str::duplicate(material);
+			res.cf.operand2 = Str::duplicate(second);
+			break;
+
 		default: internal_error("unimplemented rule outcome");
 	}
 	res.cf.options_bitmap = OR->outcome.options_applied;
@@ -640,6 +652,9 @@ exhaust the content completely, or there's an error.
 	if (OR->outcome.outcome_ID == CAROUSELSLIDE_LSNROID) {
 		if (bitmap & CAPTIONABOVE_LSNROBIT)   res.cf.minor = CAROUSEL_ABOVE_MINLC;
 		if (bitmap & CAPTIONBELOW_LSNROBIT)   res.cf.minor = CAROUSEL_BELOW_MINLC;
+	}
+	if (OR->outcome.outcome_ID == PARTITION_LSNROID) {
+		if (bitmap & INCLUSIVE_LSNROBIT)      res.cf.minor = INCLUSIVE_PARTITION_MINLC;
 	}
 	if (OR->outcome.outcome_ID == DEFINITION_LSNROID) {
 		if (bitmap & DEFAULT_LSNROBIT)         res.cf.minor = DEFAULT_COMMAND_MINLC;

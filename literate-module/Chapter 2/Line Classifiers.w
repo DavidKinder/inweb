@@ -650,6 +650,7 @@ used to mean "nothing matched".
 @e NAMELESSHOLON_LSNROID
 @e PARAGRAPHTAG_LSNROID
 @e PARAGRAPHTITLING_LSNROID
+@e PARTITION_LSNROID
 @e PURPOSE_LSNROID
 @e QUOTATION_LSNROID
 @e TEXTASCODEEXTRACT_LSNROID
@@ -686,6 +687,8 @@ used to mean "nothing matched".
 @e CAPTIONABOVE_LSNROID
 @e CAPTIONBELOW_LSNROID
 
+@e INCLUSIVE_LSNROID
+
 @e DEFAULT_LSNROID
 
 @ The following converts outcome/option names to their enumerated values:
@@ -716,6 +719,7 @@ int LineClassifiers::outcome_by_name(text_stream *outcome) {
 	if (Str::eq(outcome, I"namelessholon"))        return NAMELESSHOLON_LSNROID;
 	if (Str::eq(outcome, I"paragraphtag"))         return PARAGRAPHTAG_LSNROID;
 	if (Str::eq(outcome, I"paragraphtitling"))     return PARAGRAPHTITLING_LSNROID;
+	if (Str::eq(outcome, I"partition"))            return PARTITION_LSNROID;
 	if (Str::eq(outcome, I"purpose"))              return PURPOSE_LSNROID;
 	if (Str::eq(outcome, I"quotation"))            return QUOTATION_LSNROID;
 	if (Str::eq(outcome, I"textascodeextract"))    return TEXTASCODEEXTRACT_LSNROID;
@@ -749,6 +753,8 @@ int LineClassifiers::outcome_by_name(text_stream *outcome) {
 
 	if (Str::eq(outcome, I"captionaboveoption"))   return CAPTIONABOVE_LSNROID;
 	if (Str::eq(outcome, I"captionbelowoption"))   return CAPTIONBELOW_LSNROID;
+
+	if (Str::eq(outcome, I"inclusive"))            return INCLUSIVE_LSNROID;
 
 	if (Str::eq(outcome, I"defaultoption"))        return DEFAULT_LSNROID;
 
@@ -784,7 +790,9 @@ equal a valid outcome ID, but at present we make no use of this fact.
 @d CAPTIONABOVE_LSNROBIT   0x2000000
 @d CAPTIONBELOW_LSNROBIT   0x4000000
 
-@d DEFAULT_LSNROBIT        0x8000000
+@d INCLUSIVE_LSNROBIT      0x8000000
+
+@d DEFAULT_LSNROBIT       0x10000000
 
 =
 int LineClassifiers::option_bit(int O) {
@@ -814,6 +822,8 @@ int LineClassifiers::option_bit(int O) {
 		
 		case CAPTIONABOVE_LSNROID:   return CAPTIONABOVE_LSNROBIT;
 		case CAPTIONBELOW_LSNROID:   return CAPTIONBELOW_LSNROBIT;
+
+		case INCLUSIVE_LSNROID:      return INCLUSIVE_LSNROBIT;
 		
 		case DEFAULT_LSNROID:        return DEFAULT_LSNROBIT;
 	}

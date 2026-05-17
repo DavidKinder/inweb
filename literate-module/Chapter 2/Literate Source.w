@@ -15,6 +15,7 @@ which is a list of `ls_chunk`, which is a list of `ls_line`.
 =
 classdef ls_unit {
 	struct ls_notation *unit_notation; /* what notation is this unit written with? */
+	struct ls_notation *partition_notation; /* how to recognise partitions */
 	struct programming_language *language; /* what language is the program in? */
 
 	struct ls_section *owning_section; /* can be NULL if not read from a web */
@@ -58,6 +59,7 @@ ls_unit *LiterateSource::begin_unit(ls_section *S, ls_notation *ntn,
 	programming_language *language, pathname *extracts_path, ls_web *context) {
 	ls_unit *lsu = CREATE(ls_unit);
 	lsu->unit_notation = ntn;
+	lsu->partition_notation = NULL;
 	lsu->language = language;
 
 	lsu->owning_section = S;

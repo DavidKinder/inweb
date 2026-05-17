@@ -191,6 +191,69 @@ website as the reward:
 		10 files copied to: mos/Woven/assets
 ```
 
+## Partitioning a long source file
+
+Now suppose that the source code to be showcased is presented as a very long
+disassembly, in (say) a 20000-line text file. We want this to be broken up
+into sections in a tidy way, but without cutting up the text file.
+
+This can be done with a contents page like so:
+
+	Sections
+		"Preliminaries" at "long.asm":1
+		"Constants" at "long.asm":2
+		"The Rest" at "long.asm":3
+	
+	Notation "Partition" {
+		classify
+			; Chapter: MATERIAL ==> partition
+		end
+	}
+
+Note the suffix numbers `:1`, `:2`, ..., attached to the filenames of the
+sections. The three sections here represent _partitions_ of the same file `long.asm`.
+The "Preliminaries" section consists only of the lines in partition 1, and
+so on.
+
+If a contents page uses suffix numbers, then the web must be able to see a
+special notation called `Partition`. This is used only to determine where the
+dividing lines are; it can classify lines only as `partition`. (Regular
+notations can't use that.) In the example above, a line like:
+
+	; Chapter: Constants
+
+will be read as a _partition line_. Partitions in a file are numbered from 0,
+and continue until the next partition line; they do not include that line.
+If this is `example.asm`:
+
+	; Hello.
+	; Chapter: A
+	; This is a two-line
+	; chapter.
+	; Chapter: B
+	; This is only one line.
+
+then it has three partitions: 0 (the Hello line), 1 (two lines), 2 (one line).
+Reading `"example.asm":1` is exactly equivalent to reading a file which contains:
+
+	; This is a two-line
+	; chapter.
+
+A partition can legally be empty. If the file had begun:
+
+	; Chapter: A
+	; This is a two-line
+	; chapter.
+
+then `"example.asm":1` would still have been the two lines as before, but
+`"example.asm":0` would now be blank. And this file:
+
+	; Chapter: A
+	; Chapter: B
+	; Chapter: C
+
+has four partitions, `:0`, `:1`, `:2`, and `:3`, all of them blank.
+
 ## Example: Semiliterate C
 
 An alternative use case now: taking a non-literate program, adding comments to

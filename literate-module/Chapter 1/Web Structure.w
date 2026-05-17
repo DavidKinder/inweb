@@ -375,10 +375,12 @@ classdef ls_section {
 	struct ls_unit *literate_source;
 
 	struct filename *source_file_for_section; /* content either from a file... */
+	int partition_number; /* or perhaps from a fragment of a file if this is nonzero... */
 	struct wcl_declaration *source_declaration_for_section; /* ...or the body of a declaration */
 	int skip_from; /* ignore lines numbered in this inclusive range */
 	int skip_to;
 	int sect_extent; /* total number of lines read from a file (including skipped ones) */
+	int current_partition; /* where we are in a partitioned file (counting from 1) */
 
 	struct text_stream *tag_name;
 
@@ -399,9 +401,11 @@ ls_section *WebStructure::new_ls_section(ls_chapter *C, text_stream *titling, te
 	ls_section *S = CREATE(ls_section);
 	S->owning_chapter = C;
 	S->source_file_for_section = NULL;
+	S->partition_number = 0;
 	S->source_declaration_for_section = NULL;
 	S->skip_from = 0;
 	S->skip_to = 0;
+	S->current_partition = 0;
 	S->titling_line_to_insert = NULL;
 	S->sect_range = Str::new();
 	S->literate_source = NULL;
@@ -420,12 +424,27 @@ ls_section *WebStructure::new_ls_section(ls_chapter *C, text_stream *titling, te
 		if (Str::len(at) > 0) WRITE_TO(S->sect_claimed_location, "%c", FOLDER_SEPARATOR);
 		WRITE_TO(S->sect_claimed_location, "%S", mr.exp[1]);
 		S->tag_name = Str::duplicate(mr.exp[2]);
+	} else if (Regexp::match(&mr, titling, U"\"(%c+?)\" at \"(%c+)\":(%d+) %^\"(%c+)\" *")) {
+		WebStructure::name_section(S, mr.exp[0]);
+		S->sect_claimed_location = Str::new();
+		WRITE_TO(S->sect_claimed_location, "%S", at);
+		if (Str::len(at) > 0) WRITE_TO(S->sect_claimed_location, "%c", FOLDER_SEPARATOR);
+		WRITE_TO(S->sect_claimed_location, "%S", mr.exp[1]);
+		S->partition_number = Str::atoi(mr.exp[2], 0);
+		S->tag_name = Str::duplicate(mr.exp[3]);
 	} else if (Regexp::match(&mr, titling, U"\"(%c+?)\" at \"(%c+)\" *")) {
 		WebStructure::name_section(S, mr.exp[0]);
 		S->sect_claimed_location = Str::new();
 		WRITE_TO(S->sect_claimed_location, "%S", at);
 		if (Str::len(at) > 0) WRITE_TO(S->sect_claimed_location, "%c", FOLDER_SEPARATOR);
 		WRITE_TO(S->sect_claimed_location, "%S", mr.exp[1]);
+	} else if (Regexp::match(&mr, titling, U"\"(%c+?)\" at \"(%c+)\":(%d+) *")) {
+		WebStructure::name_section(S, mr.exp[0]);
+		S->sect_claimed_location = Str::new();
+		WRITE_TO(S->sect_claimed_location, "%S", at);
+		if (Str::len(at) > 0) WRITE_TO(S->sect_claimed_location, "%c", FOLDER_SEPARATOR);
+		WRITE_TO(S->sect_claimed_location, "%S", mr.exp[1]);
+		S->partition_number = Str::atoi(mr.exp[2], 0);
 	} else if (Regexp::match(&mr, titling, U"(%c+) %^\"(%c+)\" *")) {
 		TEMPORARY_TEXT(name)
 		WRITE_TO(name, "%S", at);
@@ -636,6 +655,9 @@ void WebStructure::scan_source_line(text_stream *line, text_file_position *tfp, 
 	int l = Str::len(line) - 1;
 	while ((l>=0) && (Characters::is_space_or_tab(Str::get_at(line, l))))
 		Str::truncate(line, l--);
+
+	if (S->partition_number > 0) @<Make sure we are in the correct partition@>;
+
 	ls_line *L = LiterateSource::feed_line(S->literate_source, tfp, line);
 	if (L->classification.major == INCLUDE_FILE_MAJLC) {
 		filename *F = Filenames::from_text_relative(
@@ -651,6 +673,29 @@ void WebStructure::scan_source_line(text_stream *line, text_file_position *tfp, 
 		L->classification.operand1 = Str::new();
 	}
 }
+
+@<Make sure we are in the correct partition@> =
+	if (S->literate_source->partition_notation == NULL) {
+		S->literate_source->partition_notation =
+			WebNotation::notation_by_name(S->literate_source->context, I"Partition");
+		if (S->literate_source->partition_notation == NULL) {
+			WebErrors::issue_at(I"unable to find a 'Partition' notation", NULL);
+			S->partition_number = 0;
+		}
+	} 
+	if (S->literate_source->partition_notation) {
+		ls_class last_cf = LineClassification::unclassified();
+		int sff = FALSE;
+		if ((S->literate_source->context) && (S->literate_source->context->single_file)) sff = TRUE;
+		ls_class_parsing res =
+			LineClassification::classify(
+				S->literate_source->partition_notation, line, &last_cf, sff);
+		if (res.cf.major == PARTITION_MAJLC) {
+			S->current_partition++;
+			if (res.cf.minor != INCLUSIVE_PARTITION_MINLC) return;
+		}
+		if (S->partition_number != S->current_partition) return;
+	}
 
 @h Language.
 I'm probably showing my age here: the default language for a web is C.
