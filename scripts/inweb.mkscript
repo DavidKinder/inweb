@@ -185,6 +185,7 @@ pages:
 	$(INWEB) weave -colony $(COLONY) -member foundation
 	$(INWEB) weave -colony $(COLONY) -member foundation-test
 	$(INWEB) weave -colony $(COLONY) -member literate
+	$(INWEB) weave -colony $(COLONY) -member guide
 
 # Cleaning up:
 

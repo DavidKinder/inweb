@@ -103,7 +103,25 @@ we can <em>either</em> give its contents page:</p>
 <div class="lsmarkdown">
 <p>New output has appeared here: a contents rundown. The <code>abbrev</code> column is because
 Inweb sometimes needs a way to refer to sections briefly but unambiguously: it
-chooses abbreviations such that no two sections can ever have the same.</p>
+chooses abbreviations such that no two sections can ever have the same. These
+are sometimes not what the author would choose, though, so Inweb also allows
+the contents entry to specify an abbreviation explicitly:</p>
+<pre class="displayed-code all-displayed-code code-font"><span class="plain-syntax">Sections
+	"Counting Sort" = "csort"
+	"Quick Sort" = "qsort"
+</span></pre>
+<p>After which:</p>
+</div>
+<pre class="ConsoleText-displayed-code all-displayed-code code-font">
+<span class="ConsoleText-plain-syntax">    web "Sorting Smorgasbord" (Python program in MarkdownCode notation): 2 sections : 10 paragraphs : 139 lines</span>
+
+<span class="ConsoleText-plain-syntax">    Contents:</span>
+<span class="ConsoleText-plain-syntax">    abbrev | section       | lines</span>
+<span class="ConsoleText-plain-syntax">    ------ | ------------- | -----</span>
+<span class="ConsoleText-plain-syntax">    csort  | Counting Sort | 77</span>
+<span class="ConsoleText-plain-syntax">    qsort  | Quick Sort    | 62</span>
+</pre>
+<div class="lsmarkdown">
 <h2>Weaving and tangling</h2>
 <p>Weaving and tangling work much as they do for single-file webs, except that
 the output is written, by default, to different places:</p>
@@ -269,7 +287,7 @@ HTML file generated for <code>Solution Deviser</code> is <code>3-sd.html</code>.
 this ever be necessary. There is never a Chapter 0.</p>
 </div>
 <nav role="progress"><div class="progresscontainer">
-    <ul class="progressbar"><li class="progressprev"><a href="1-mtd.html">&#10094;</a></li><li class="progresschapter"><a href="1-gs.html">1</a></li><li class="progresscurrentchapter">2</li><li class="progresscurrent">cp</li><li class="progresssection"><a href="2-mdl.html">mdl</a></li><li class="progresssection"><a href="2-tgs.html">tgs</a></li><li class="progresssection"><a href="2-cnv.html">cnv</a></li><li class="progresssection"><a href="2-rad.html">rad</a></li><li class="progresschapter"><a href="3-cln.html">3</a></li><li class="progresschapter"><a href="4-an.html">4</a></li><li class="progresschapter"><a href="5-al.html">5</a></li><li class="progresschapter"><a href="6-ap.html">6</a></li><li class="progresschapter"><a href="7-bn.html">7</a></li><li class="progressnext"><a href="2-mdl.html">&#10095;</a></li></ul></div>
+    <ul class="progressbar"><li class="progressprev"><span class="nav-popup">Metadata</span><a href="1-mtd.html">&#10094;</a></li><li class="progresschapter"><span class="c-fullname-popup">Chapter 1: Smaller Webs</span><a href="1-gs.html">1</a><li class="progresscurrentchapter"><span class="current-c-fullname-popup">Chapter 2: Larger Webs</span>2<li class="progresscurrent"><span class="current-fullname-popup">Contents Pages</span>cp</li><li class="progresssection"><span class="fullname-popup">Modules</span><a href="2-mdl.html">mdl</a></li><li class="progresssection"><span class="fullname-popup">Tags</span><a href="2-tgs.html">tgs</a></li><li class="progresssection"><span class="fullname-popup">Conventions</span><a href="2-cnv.html">cnv</a></li><li class="progresssection"><span class="fullname-popup">Resources and Declarations</span><a href="2-rad.html">rad</a></li><li class="progresschapter"><span class="c-fullname-popup">Chapter 3: Colonies of Webs</span><a href="3-cln.html">3</a><li class="progresschapter"><span class="c-fullname-popup">Chapter 4: Notations</span><a href="4-an.html">4</a><li class="progresschapter"><span class="c-fullname-popup">Chapter 5: Languages</span><a href="5-al.html">5</a><li class="progresschapter"><span class="c-fullname-popup">Chapter 6: Patterns</span><a href="6-ap.html">6</a><li class="progresschapter"><span class="c-fullname-popup">Chapter 7: Other Services</span><a href="7-bn.html">7</a><li class="progressnext"><span class="nav-popup">Modules</span><a href="2-mdl.html">&#10095;</a></li></ul></div>
 </nav><!-- End of weave -->
 
 		</main>

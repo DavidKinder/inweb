@@ -221,6 +221,59 @@ website as the reward:</p>
 <span class="ConsoleText-plain-syntax">        10 files copied to: mos/Woven/assets</span>
 </pre>
 <div class="lsmarkdown">
+<h2>Partitioning a long source file</h2>
+<p>Now suppose that the source code to be showcased is presented as a very long
+disassembly, in (say) a 20000-line text file. We want this to be broken up
+into sections in a tidy way, but without cutting up the text file.</p>
+<p>This can be done with a contents page like so:</p>
+<pre class="displayed-code all-displayed-code code-font"><span class="plain-syntax">Sections
+	"Preliminaries" at "long.asm":1
+	"Constants" at "long.asm":2
+	"The Rest" at "long.asm":3
+
+Notation "Partition" {
+	classify
+		; Chapter: MATERIAL ==&gt; partition
+	end
+}
+</span></pre>
+<p>Note the suffix numbers <code>:1</code>, <code>:2</code>, ..., attached to the filenames of the
+sections. The three sections here represent <em>partitions</em> of the same file <code>long.asm</code>.
+The &quot;Preliminaries&quot; section consists only of the lines in partition 1, and
+so on.</p>
+<p>If a contents page uses suffix numbers, then the web must be able to see a
+special notation called <code>Partition</code>. This is used only to determine where the
+dividing lines are; it can classify lines only as <code>partition</code>. (Regular
+notations can't use that.) In the example above, a line like:</p>
+<pre class="displayed-code all-displayed-code code-font"><span class="plain-syntax">; Chapter: Constants
+</span></pre>
+<p>will be read as a <em>partition line</em>. Partitions in a file are numbered from 0,
+and continue until the next partition line; they do not include that line.
+If this is <code>example.asm</code>:</p>
+<pre class="displayed-code all-displayed-code code-font"><span class="plain-syntax">; Hello.
+; Chapter: A
+; This is a two-line
+; chapter.
+; Chapter: B
+; This is only one line.
+</span></pre>
+<p>then it has three partitions: 0 (the Hello line), 1 (two lines), 2 (one line).
+Reading <code>&quot;example.asm&quot;:1</code> is exactly equivalent to reading a file which contains:</p>
+<pre class="displayed-code all-displayed-code code-font"><span class="plain-syntax">; This is a two-line
+; chapter.
+</span></pre>
+<p>A partition can legally be empty. If the file had begun:</p>
+<pre class="displayed-code all-displayed-code code-font"><span class="plain-syntax">; Chapter: A
+; This is a two-line
+; chapter.
+</span></pre>
+<p>then <code>&quot;example.asm&quot;:1</code> would still have been the two lines as before, but
+<code>&quot;example.asm&quot;:0</code> would now be blank. And this file:</p>
+<pre class="displayed-code all-displayed-code code-font"><span class="plain-syntax">; Chapter: A
+; Chapter: B
+; Chapter: C
+</span></pre>
+<p>has four partitions, <code>:0</code>, <code>:1</code>, <code>:2</code>, and <code>:3</code>, all of them blank.</p>
 <h2>Example: Semiliterate C</h2>
 <p>An alternative use case now: taking a non-literate program, adding comments to
 it in a particular format, and making it &quot;semiliterate&quot; — that is, able to
@@ -299,7 +352,7 @@ formulae, headings, a contents page, and so on:</p>
 <span class="ConsoleText-plain-syntax">        11 files copied to: jasmine/Woven/assets</span>
 </pre>
 <nav role="progress"><div class="progresscontainer">
-    <ul class="progressbar"><li class="progressprev"><a href="4-cn.html">&#10094;</a></li><li class="progresschapter"><a href="1-gs.html">1</a></li><li class="progresschapter"><a href="2-cp.html">2</a></li><li class="progresschapter"><a href="3-cln.html">3</a></li><li class="progresscurrentchapter">4</li><li class="progresssection"><a href="4-an.html">an</a></li><li class="progresssection"><a href="4-in.html">in</a></li><li class="progresssection"><a href="4-wac.html">wac</a></li><li class="progresssection"><a href="4-cn.html">cn</a></li><li class="progresscurrent">sip</li><li class="progresssection"><a href="4-son.html">son</a></li><li class="progresschapter"><a href="5-al.html">5</a></li><li class="progresschapter"><a href="6-ap.html">6</a></li><li class="progresschapter"><a href="7-bn.html">7</a></li><li class="progressnext"><a href="4-son.html">&#10095;</a></li></ul></div>
+    <ul class="progressbar"><li class="progressprev"><span class="nav-popup">Creating Notations</span><a href="4-cn.html">&#10094;</a></li><li class="progresschapter"><span class="c-fullname-popup">Chapter 1: Smaller Webs</span><a href="1-gs.html">1</a><li class="progresschapter"><span class="c-fullname-popup">Chapter 2: Larger Webs</span><a href="2-cp.html">2</a><li class="progresschapter"><span class="c-fullname-popup">Chapter 3: Colonies of Webs</span><a href="3-cln.html">3</a><li class="progresscurrentchapter"><span class="current-c-fullname-popup">Chapter 4: Notations</span>4<li class="progresssection"><span class="fullname-popup">About Notations</span><a href="4-an.html">an</a></li><li class="progresssection"><span class="fullname-popup">InwebClassic Notation</span><a href="4-in.html">in</a></li><li class="progresssection"><span class="fullname-popup">WEB and CWEB</span><a href="4-wac.html">wac</a></li><li class="progresssection"><span class="fullname-popup">Creating Notations</span><a href="4-cn.html">cn</a></li><li class="progresscurrent"><span class="current-fullname-popup">Showcasing Illiterate Programs</span>sip</li><li class="progresssection"><span class="fullname-popup">Summary of Notations</span><a href="4-son.html">son</a></li><li class="progresschapter"><span class="c-fullname-popup">Chapter 5: Languages</span><a href="5-al.html">5</a><li class="progresschapter"><span class="c-fullname-popup">Chapter 6: Patterns</span><a href="6-ap.html">6</a><li class="progresschapter"><span class="c-fullname-popup">Chapter 7: Other Services</span><a href="7-bn.html">7</a><li class="progressnext"><span class="nav-popup">Summary of Notations</span><a href="4-son.html">&#10095;</a></li></ul></div>
 </nav><!-- End of weave -->
 
 		</main>
