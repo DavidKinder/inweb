@@ -220,8 +220,10 @@ int HTMLWeaving::render_visit(tree_node *N, void *state, int L) {
 				if (Str::ne(Ch->ch_range, I"S")) {
 					if (Ch == C->sect->owning_chapter) {
 						HTML_OPEN_WITH("li", "class=\"progresscurrentchapter\"");
+						HTMLWeaving::progress_popup(OUT, I"current-c-fullname-popup", Ch->ch_title);
 					} else {
 						HTML_OPEN_WITH("li", "class=\"progresschapter\"");
+						HTMLWeaving::progress_popup(OUT, I"c-fullname-popup", Ch->ch_title);
 					}
 					ls_section *S = FIRST_IN_LINKED_LIST(ls_section, Ch->sections);
 					if (S) {
@@ -236,7 +238,6 @@ int HTMLWeaving::render_visit(tree_node *N, void *state, int L) {
 						}
 						DISCARD_TEXT(TEMP)
 					}
-					HTML_CLOSE("li");
 				}
 				if (Ch == C->sect->owning_chapter) {
 					ls_section *S;
@@ -253,10 +254,12 @@ int HTMLWeaving::render_visit(tree_node *N, void *state, int L) {
 							Str::delete_first_character(label);
 						if (S == C->sect) {
 							HTML_OPEN_WITH("li", "class=\"progresscurrent\"");
+							HTMLWeaving::progress_popup(OUT, I"current-fullname-popup", S->sect_title);
 							WRITE("%S", label);
 							HTML_CLOSE("li");
 						} else {
 							HTML_OPEN_WITH("li", "class=\"progresssection\"");
+							HTMLWeaving::progress_popup(OUT, I"fullname-popup", S->sect_title);
 							TEMPORARY_TEXT(TEMP)
 							Colonies::section_URL(TEMP, S);
 							HTML::begin_link(OUT, TEMP);
@@ -277,8 +280,10 @@ int HTMLWeaving::render_visit(tree_node *N, void *state, int L) {
 	}
 
 @<Insert previous arrow@> =
-	if (prev_S) HTML_OPEN_WITH("li", "class=\"progressprev\"")
-	else HTML_OPEN_WITH("li", "class=\"progressprevoff\"");
+	if (prev_S) {
+		HTML_OPEN_WITH("li", "class=\"progressprev\"");
+		HTMLWeaving::progress_popup(OUT, I"nav-popup", prev_S->sect_title);
+	} else HTML_OPEN_WITH("li", "class=\"progressprevoff\"");
 	TEMPORARY_TEXT(TEMP)
 	if (prev_S) Colonies::section_URL(TEMP, prev_S);
 	if (prev_S) HTML::begin_link(OUT, TEMP);
@@ -288,8 +293,10 @@ int HTMLWeaving::render_visit(tree_node *N, void *state, int L) {
 	HTML_CLOSE("li");
 
 @<Insert next arrow@> =
-	if (next_S) HTML_OPEN_WITH("li", "class=\"progressnext\"")
-	else HTML_OPEN_WITH("li", "class=\"progressnextoff\"");
+	if (next_S) {
+		HTML_OPEN_WITH("li", "class=\"progressnext\"");
+		HTMLWeaving::progress_popup(OUT, I"nav-popup", next_S->sect_title);
+	} else HTML_OPEN_WITH("li", "class=\"progressnextoff\"");
 	TEMPORARY_TEXT(TEMP)
 	if (next_S) Colonies::section_URL(TEMP, next_S);
 	if (next_S) HTML::begin_link(OUT, TEMP);
@@ -1434,6 +1441,15 @@ void HTMLWeaving::render_carousel_bottom(OUTPUT_STREAM, weave_order *wv, int sli
 @<Place caption here@> =
 	if (Str::len(caption) > 0)
 		WRITE("<div class=\"%S\">%S</div>\n", caption_class, caption);
+
+@h The progress bar popups.
+
+=
+void HTMLWeaving::progress_popup(OUTPUT_STREAM, text_stream *cl, text_stream *content) {
+	HTML_OPEN_WITH("span", "class=\"%S\"", cl);
+	HTMLWeaving::escape_text(OUT, content);
+	HTML_CLOSE("span");
+}
 
 @h EPUB-only methods.
 

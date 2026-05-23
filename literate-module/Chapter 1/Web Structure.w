@@ -416,52 +416,53 @@ ls_section *WebStructure::new_ls_section(ls_chapter *C, text_stream *titling, te
 
 	S->sect_title = NULL;
 	S->sect_claimed_location = NULL;
+	S->tag_name = NULL;
 	match_results mr = Regexp::create_mr();
-	if (Regexp::match(&mr, titling, U"\"(%c+?)\" at \"(%c+)\" %^\"(%c+)\" *")) {
-		WebStructure::name_section(S, mr.exp[0]);
-		S->sect_claimed_location = Str::new();
-		WRITE_TO(S->sect_claimed_location, "%S", at);
-		if (Str::len(at) > 0) WRITE_TO(S->sect_claimed_location, "%c", FOLDER_SEPARATOR);
-		WRITE_TO(S->sect_claimed_location, "%S", mr.exp[1]);
-		S->tag_name = Str::duplicate(mr.exp[2]);
-	} else if (Regexp::match(&mr, titling, U"\"(%c+?)\" at \"(%c+)\":(%d+) %^\"(%c+)\" *")) {
-		WebStructure::name_section(S, mr.exp[0]);
-		S->sect_claimed_location = Str::new();
-		WRITE_TO(S->sect_claimed_location, "%S", at);
-		if (Str::len(at) > 0) WRITE_TO(S->sect_claimed_location, "%c", FOLDER_SEPARATOR);
-		WRITE_TO(S->sect_claimed_location, "%S", mr.exp[1]);
-		S->partition_number = Str::atoi(mr.exp[2], 0);
-		S->tag_name = Str::duplicate(mr.exp[3]);
-	} else if (Regexp::match(&mr, titling, U"\"(%c+?)\" at \"(%c+)\" *")) {
-		WebStructure::name_section(S, mr.exp[0]);
-		S->sect_claimed_location = Str::new();
-		WRITE_TO(S->sect_claimed_location, "%S", at);
-		if (Str::len(at) > 0) WRITE_TO(S->sect_claimed_location, "%c", FOLDER_SEPARATOR);
-		WRITE_TO(S->sect_claimed_location, "%S", mr.exp[1]);
-	} else if (Regexp::match(&mr, titling, U"\"(%c+?)\" at \"(%c+)\":(%d+) *")) {
-		WebStructure::name_section(S, mr.exp[0]);
-		S->sect_claimed_location = Str::new();
-		WRITE_TO(S->sect_claimed_location, "%S", at);
-		if (Str::len(at) > 0) WRITE_TO(S->sect_claimed_location, "%c", FOLDER_SEPARATOR);
-		WRITE_TO(S->sect_claimed_location, "%S", mr.exp[1]);
-		S->partition_number = Str::atoi(mr.exp[2], 0);
-	} else if (Regexp::match(&mr, titling, U"(%c+) %^\"(%c+)\" *")) {
-		TEMPORARY_TEXT(name)
-		WRITE_TO(name, "%S", at);
-		if (Str::len(at) > 0) WRITE_TO(name, "%c", FOLDER_SEPARATOR);
-		WRITE_TO(name, "%S", mr.exp[0]);
-		WebStructure::name_section(S, name);
-		DISCARD_TEXT(name)
+	
+	TEMPORARY_TEXT(line)
+	WRITE_TO(line, "%S", titling);
+	
+	if (Regexp::match(&mr, line, U"(%c+) %^\"(%c+)\" *")) {
+		Str::clear(line);
+		WRITE_TO(line, "%S", mr.exp[0]);
 		S->tag_name = Str::duplicate(mr.exp[1]);
-	} else {
-		TEMPORARY_TEXT(name)
-		WRITE_TO(name, "%S", at);
-		if (Str::len(at) > 0) WRITE_TO(name, "%c", FOLDER_SEPARATOR);
-		WRITE_TO(name, "%S",titling);
-		WebStructure::name_section(S, name);
-		DISCARD_TEXT(name)
-		S->tag_name = NULL;
 	}
+
+	if (Regexp::match(&mr, line, U"(%c+) at \"(%c+)\" *")) {
+		Str::clear(line);
+		WRITE_TO(line, "%S", mr.exp[0]);
+		S->sect_claimed_location = Str::new();
+		WRITE_TO(S->sect_claimed_location, "%S", at);
+		if (Str::len(at) > 0) WRITE_TO(S->sect_claimed_location, "%c", FOLDER_SEPARATOR);
+		WRITE_TO(S->sect_claimed_location, "%S", mr.exp[1]);
+	} else if (Regexp::match(&mr, line, U"(%c+) at \"(%c+)\":(%d+) *")) {
+		Str::clear(line);
+		WRITE_TO(line, "%S", mr.exp[0]);
+		S->sect_claimed_location = Str::new();
+		WRITE_TO(S->sect_claimed_location, "%S", at);
+		if (Str::len(at) > 0) WRITE_TO(S->sect_claimed_location, "%c", FOLDER_SEPARATOR);
+		WRITE_TO(S->sect_claimed_location, "%S", mr.exp[1]);
+		S->partition_number = Str::atoi(mr.exp[2], 0);
+	} 
+	
+	if (Regexp::match(&mr, line, U"(%c+) = \"(%c+)\" *")) {
+		Str::clear(line);
+		WRITE_TO(line, "%S", mr.exp[0]);
+		S->sect_range = Str::duplicate(mr.exp[1]);
+	}
+
+	if (Regexp::match(&mr, line, U" *\"(%c+)\" *")) {
+		Str::clear(line);
+		WRITE_TO(line, "%S", mr.exp[0]);
+	}
+
+	TEMPORARY_TEXT(name)
+	WRITE_TO(name, "%S", at);
+	if (Str::len(at) > 0) WRITE_TO(name, "%c", FOLDER_SEPARATOR);
+	WRITE_TO(name, "%S", line);
+	WebStructure::name_section(S, name);
+	DISCARD_TEXT(name)
+
 	Regexp::dispose_of(&mr);
 	
 	S->scratch_flag = FALSE;
@@ -472,6 +473,8 @@ ls_section *WebStructure::new_ls_section(ls_chapter *C, text_stream *titling, te
 	S->analysis_ref = NULL;
 
 	ADD_TO_LINKED_LIST(S, ls_section, C->sections);
+
+	DISCARD_TEXT(line)
 	return S;
 }
 

@@ -61,7 +61,25 @@ Either way, the reply is:
 
 New output has appeared here: a contents rundown. The `abbrev` column is because
 Inweb sometimes needs a way to refer to sections briefly but unambiguously: it
-chooses abbreviations such that no two sections can ever have the same.
+chooses abbreviations such that no two sections can ever have the same. These
+are sometimes not what the author would choose, though, so Inweb also allows
+the contents entry to specify an abbreviation explicitly:
+
+	Sections
+		"Counting Sort" = "csort"
+		"Quick Sort" = "qsort"
+
+After which:
+
+``` ConsoleText
+	web "Sorting Smorgasbord" (Python program in MarkdownCode notation): 2 sections : 10 paragraphs : 139 lines
+	
+	Contents:
+	abbrev | section       | lines
+	------ | ------------- | -----
+	csort  | Counting Sort | 77   
+	qsort  | Quick Sort    | 62
+```
 
 ## Weaving and tangling
 
